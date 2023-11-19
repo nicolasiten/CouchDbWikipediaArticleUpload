@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33627.172
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CouchDbWikipediaArticleUpload", "CouchDbWikipediaArticleUpload.csproj", "{8F25477A-DC77-410E-9C2A-7719610653D8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8F25477A-DC77-410E-9C2A-7719610653D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F25477A-DC77-410E-9C2A-7719610653D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F25477A-DC77-410E-9C2A-7719610653D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F25477A-DC77-410E-9C2A-7719610653D8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3B634897-84DB-4917-8511-77629B865FA0}
+	EndGlobalSection
+EndGlobal
