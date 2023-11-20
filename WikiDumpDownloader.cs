@@ -44,7 +44,6 @@ namespace CouchDbWikipediaArticleUpload
                 .Select(f => (string)f.SelectToken("..url"))
                 .Where(u => !u.Contains("-index"))
                 .Select(u => $"{baseUrl}{u}")
-                .Take(3)
                 .ToArray();
         }
 

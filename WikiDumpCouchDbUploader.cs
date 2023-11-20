@@ -66,8 +66,17 @@ namespace CouchDbWikipediaArticleUpload
             XmlNamespaceManager namespaceManager = new XmlNamespaceManager(xmlReader.NameTable);
             namespaceManager.AddNamespace("ns", "http://www.mediawiki.org/xml/export-0.10/");
 
-            var xmlPageElements = XmlHelpers.GetElementsByName(xmlReader, "page").ToArray();
-            return xmlPageElements.Select(xmlPageElement => ParseArticle(xmlPageElement, namespaceManager)).ToArray();
+            var xmlPageElements = XmlHelpers.GetElementsByName(xmlReader, "page");
+            var xmlPageElementsFiltered = FilterArticles(xmlPageElements, namespaceManager).ToArray();
+            return xmlPageElementsFiltered.Select(xmlPageElement => ParseArticle(xmlPageElement, namespaceManager)).ToArray();
+        }
+
+        private IEnumerable<XElement> FilterArticles(IEnumerable<XElement> xmlArticles, XmlNamespaceManager namespaceManager)
+        {
+            // articles have the namespace-key "0"
+            // see: https://en.wikipedia.org/wiki/Wikipedia:Namespace
+            return xmlArticles
+                .Where(xmlArticle => xmlArticle.XPathSelectElement("/ns:ns", namespaceManager)!.Value == "0");
         }
 
         private Article ParseArticle(XElement xmlArticle, XmlNamespaceManager namespaceManager)
