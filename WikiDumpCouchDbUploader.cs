@@ -13,10 +13,15 @@ namespace CouchDbWikipediaArticleUpload
     public class WikiDumpCouchDbUploader
     {
         private readonly IConfiguration _configuration;
+        private readonly int? _articleUploadLimit;
+
+        private int _currentArticleCount;
+        private readonly object _lock = new object();
 
         public WikiDumpCouchDbUploader(IConfiguration configuration)
         {
             _configuration = configuration;
+            _articleUploadLimit = _configuration.GetValue<int?>("ArticleUploadLimit", null);
         }
 
         public async Task RunAsync()
@@ -37,10 +42,44 @@ namespace CouchDbWikipediaArticleUpload
                 {
                     Console.WriteLine($"Starting upload of {dumpFile}");
 
+                    // check if file should be skipped based on article limit
+                    if (_articleUploadLimit.HasValue)
+                    {
+                        lock (_lock)
+                        {
+                            if (_currentArticleCount >= _articleUploadLimit.Value)
+                            {
+                                Console.WriteLine($"Skip {dumpFile} article limit has been reached.");
+                                return;
+                            }
+                        }
+                    }
+
+                    // process file
                     var pages = ParseDumpFile(dumpFile);
                     foreach (var pageChunk in pages.Chunk(100))
                     {
-                        await db.AddOrUpdateRangeAsync(pageChunk.ToArray());
+                        var pageChunkToProcess = pageChunk;
+
+                        // check article limit
+                        if (_articleUploadLimit.HasValue)
+                        {
+                            lock ( _lock)
+                            {
+                                var chunkSize = pageChunk.Length;
+                                if (_currentArticleCount > _articleUploadLimit.Value)
+                                    break;
+                                if (_currentArticleCount + chunkSize > _articleUploadLimit.Value)
+                                {
+                                    var pagesUntilLimit = _articleUploadLimit.Value - _currentArticleCount;
+                                    pageChunkToProcess = pageChunkToProcess.Take(pagesUntilLimit).ToArray();
+                                }
+
+                                _currentArticleCount += pageChunkToProcess.Length;
+                            }
+                        }
+
+                        await db.AddOrUpdateRangeAsync(pageChunkToProcess);
                     }
 
                     Console.WriteLine($"Successfully uploaded {dumpFile}");
